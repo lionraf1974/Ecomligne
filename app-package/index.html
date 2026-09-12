@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>حروفي وكلماتي - تعلم الإنجليزية</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4D96FF">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;800&family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FFF8E7;
+    --paper: #FFFDF7;
+    --ink: #2B2640;
+    --red: #F2545B;
+    --orange: #FF9F45;
+    --yellow: #FFD23F;
+    --green: #52B788;
+    --blue: #4D96FF;
+    --purple: #9B72CF;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    font-family:'Cairo', sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  .en{font-family:'Baloo 2', sans-serif; direction:ltr; unicode-bidi:isolate;}
+
+  /* ===== App shell ===== */
+  #app{max-width:520px; margin:0 auto; padding:20px 16px 60px; min-height:100vh;}
+  .app-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:22px;}
+  .app-title{font-size:22px; font-weight:800; margin:0;}
+  .app-title span.en{color:var(--blue); font-size:24px;}
+
+  .back-btn{
+    width:42px; height:42px; border-radius:14px; border:3px solid var(--ink);
+    background:var(--paper); font-size:20px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; box-shadow:3px 3px 0 var(--ink); flex-shrink:0;
+  }
+  .back-btn:active{box-shadow:1px 1px 0 var(--ink); transform:translate(2px,2px);}
+
+  /* ===== Level cards (home) ===== */
+  .level-card{
+    display:flex; align-items:center; gap:14px;
+    border:4px solid var(--ink); border-radius:24px;
+    padding:18px; margin-bottom:18px; cursor:pointer;
+    box-shadow:6px 6px 0 var(--ink);
+    transition:transform .12s, box-shadow .12s;
+  }
+  .level-card:active{transform:translate(4px,4px); box-shadow:2px 2px 0 var(--ink);}
+  .level-card.l1{background:var(--blue);}
+  .level-card.l2{background:var(--green);}
+  .level-card.l3{background:var(--purple);}
+  .level-badge{
+    width:58px; height:58px; border-radius:50%; background:var(--paper);
+    border:3px solid var(--ink); display:flex; align-items:center; justify-content:center;
+    font-size:26px; font-weight:800; flex-shrink:0;
+  }
+  .level-info h2{margin:0 0 4px; font-size:19px; font-weight:800; color:var(--paper);}
+  .level-info p{margin:0; font-size:14px; color:var(--paper); opacity:.95;}
+
+  /* ===== Category pills ===== */
+  .cat-row{display:flex; gap:10px; overflow-x:auto; padding:4px 2px 14px; margin-bottom:6px;}
+  .cat-pill{
+    flex-shrink:0; padding:9px 18px; border-radius:999px; border:3px solid var(--ink);
+    background:var(--paper); font-weight:700; font-size:14px; cursor:pointer; white-space:nowrap;
+  }
+  .cat-pill.active{background:var(--yellow);}
+
+  /* ===== Flashcards grid ===== */
+  .card-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .flip-card{perspective:1000px; height:150px; cursor:pointer;}
+  .flip-inner{
+    position:relative; width:100%; height:100%; transition:transform .5s;
+    transform-style:preserve-3d;
+  }
+  .flip-card.flipped .flip-inner{transform:rotateY(180deg);}
+  .flip-face{
+    position:absolute; inset:0; backface-visibility:hidden;
+    border:3px solid var(--ink); border-radius:18px; background:var(--paper);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    box-shadow:4px 4px 0 var(--ink); padding:8px; text-align:center;
+  }
+  .flip-face.back{transform:rotateY(180deg); background:var(--yellow);}
+  .card-emoji{font-size:34px; margin-bottom:6px;}
+  .card-word{font-size:19px; font-weight:800;}
+  .card-ar{font-size:17px; font-weight:700;}
+  .speak-btn{
+    position:absolute; top:6px; left:6px; width:32px; height:32px; border-radius:50%;
+    border:2px solid var(--ink); background:var(--paper); font-size:14px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; z-index:2;
+  }
+  .swatch{width:36px; height:36px; border-radius:10px; border:2px solid var(--ink); margin-bottom:8px;}
+
+  .sentence-card{
+    border:3px solid var(--ink); border-radius:18px; background:var(--paper);
+    box-shadow:4px 4px 0 var(--ink); padding:16px; margin-bottom:14px; position:relative;
+  }
+  .sentence-en{font-size:19px; font-weight:700; margin-bottom:6px; padding-left:38px;}
+  .sentence-ar{font-size:15px; color:#5b5470;}
+
+  .hint{text-align:center; font-size:13px; color:#8a8299; margin:6px 0 16px;}
+  .screen{display:none;}
+  .screen.active{display:block;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HOME -->
+  <section id="screen-home" class="screen active">
+    <div class="app-header">
+      <h1 class="app-title">حروفي و<span class="en">Words</span> 🌟</h1>
+    </div>
+    <div class="level-card l1" onclick="openLevel(1)">
+      <div class="level-badge">١</div>
+      <div class="level-info"><h2>البداية</h2><p>الحروف، الأرقام، والألوان</p></div>
+    </div>
+    <div class="level-card l2" onclick="openLevel(2)">
+      <div class="level-badge">٢</div>
+      <div class="level-info"><h2>كلمات جديدة</h2><p>حيوانات، طعام، عائلة، وجسمي</p></div>
+    </div>
+    <div class="level-card l3" onclick="openLevel(3)">
+      <div class="level-badge">٣</div>
+      <div class="level-info"><h2>جمل صغيرة</h2><p>تحيات وعبارات يومية بسيطة</p></div>
+    </div>
+  </section>
+
+  <!-- LEVEL -->
+  <section id="screen-level" class="screen">
+    <div class="app-header">
+      <button class="back-btn" onclick="goHome()">›</button>
+      <h1 class="app-title" id="level-title"></h1>
+      <div style="width:42px"></div>
+    </div>
+    <div class="cat-row" id="cat-row"></div>
+    <p class="hint" id="level-hint">اضغط على البطاقة لترى الترجمة، واضغط 🔊 للاستماع</p>
+    <div id="content-area"></div>
+  </section>
+
+</div>
+
+<script>
+const DATA = {
+  1: {
+    title: 'البداية', color:'l1',
+    cats: {
+      letters: { label:'الحروف', type:'grid', items:[
+        {emoji:'🍎', en:'Apple (A)', ar:'تفاحة'}, {emoji:'🎈', en:'Balloon (B)', ar:'بالون'},
+        {emoji:'🐱', en:'Cat (C)', ar:'قطة'}, {emoji:'🐶', en:'Dog (D)', ar:'كلب'},
+        {emoji:'🥚', en:'Egg (E)', ar:'بيضة'}, {emoji:'🐟', en:'Fish (F)', ar:'سمكة'},
+        {emoji:'🍇', en:'Grapes (G)', ar:'عنب'}, {emoji:'🏠', en:'House (H)', ar:'منزل'},
+        {emoji:'🍦', en:'Ice cream (I)', ar:'آيس كريم'}, {emoji:'🧃', en:'Juice (J)', ar:'عصير'},
+        {emoji:'🔑', en:'Key (K)', ar:'مفتاح'}, {emoji:'🦁', en:'Lion (L)', ar:'أسد'},
+        {emoji:'🌙', en:'Moon (M)', ar:'قمر'}, {emoji:'👃', en:'Nose (N)', ar:'أنف'},
+        {emoji:'🍊', en:'Orange (O)', ar:'برتقال'}, {emoji:'🐷', en:'Pig (P)', ar:'خنزير'},
+        {emoji:'👑', en:'Queen (Q)', ar:'ملكة'}, {emoji:'🌈', en:'Rainbow (R)', ar:'قوس قزح'},
+        {emoji:'☀️', en:'Sun (S)', ar:'شمس'}, {emoji:'🐢', en:'Turtle (T)', ar:'سلحفاة'},
+        {emoji:'☂️', en:'Umbrella (U)', ar:'مظلة'}, {emoji:'🚐', en:'Van (V)', ar:'شاحنة صغيرة'},
+        {emoji:'⌚', en:'Watch (W)', ar:'ساعة'}, {emoji:'📦', en:'Box (X)', ar:'صندوق'},
+        {emoji:'🪀', en:'Yo-yo (Y)', ar:'يويو'}, {emoji:'🦓', en:'Zebra (Z)', ar:'حمار وحشي'}
+      ]},
+      numbers: { label:'الأرقام', type:'grid', items:[
+        {emoji:'1️⃣', en:'One', ar:'واحد'}, {emoji:'2️⃣', en:'Two', ar:'اثنان'},
+        {emoji:'3️⃣', en:'Three', ar:'ثلاثة'}, {emoji:'4️⃣', en:'Four', ar:'أربعة'},
+        {emoji:'5️⃣', en:'Five', ar:'خمسة'}, {emoji:'6️⃣', en:'Six', ar:'ستة'},
+        {emoji:'7️⃣', en:'Seven', ar:'سبعة'}, {emoji:'8️⃣', en:'Eight', ar:'ثمانية'},
+        {emoji:'9️⃣', en:'Nine', ar:'تسعة'}, {emoji:'🔟', en:'Ten', ar:'عشرة'}
+      ]},
+      colors: { label:'الألوان', type:'colors', items:[
+        {hex:'#F2545B', en:'Red', ar:'أحمر'}, {hex:'#4D96FF', en:'Blue', ar:'أزرق'},
+        {hex:'#FFD23F', en:'Yellow', ar:'أصفر'}, {hex:'#52B788', en:'Green', ar:'أخضر'},
+        {hex:'#FF9F45', en:'Orange', ar:'برتقالي'}, {hex:'#9B72CF', en:'Purple', ar:'بنفسجي'},
+        {hex:'#FF8FB1', en:'Pink', ar:'وردي'}, {hex:'#2B2640', en:'Black', ar:'أسود'},
+        {hex:'#FFFDF7', en:'White', ar:'أبيض'}, {hex:'#A97455', en:'Brown', ar:'بني'}
+      ]}
+    }
+  },
+  2: {
+    title:'كلمات جديدة', color:'l2',
+    cats:{
+      animals:{label:'حيوانات', type:'grid', items:[
+        {emoji:'🐘',en:'Elephant',ar:'فيل'},{emoji:'🦒',en:'Giraffe',ar:'زرافة'},
+        {emoji:'🐴',en:'Horse',ar:'حصان'},{emoji:'🐑',en:'Sheep',ar:'خروف'},
+        {emoji:'🐔',en:'Chicken',ar:'دجاجة'},{emoji:'🐸',en:'Frog',ar:'ضفدع'},
+        {emoji:'🦋',en:'Butterfly',ar:'فراشة'},{emoji:'🐻',en:'Bear',ar:'دب'},
+        {emoji:'🐰',en:'Rabbit',ar:'أرنب'},{emoji:'🐍',en:'Snake',ar:'ثعبان'}
+      ]},
+      food:{label:'طعام', type:'grid', items:[
+        {emoji:'🍞',en:'Bread',ar:'خبز'},{emoji:'🧀',en:'Cheese',ar:'جبنة'},
+        {emoji:'🍌',en:'Banana',ar:'موزة'},{emoji:'🍕',en:'Pizza',ar:'بيتزا'},
+        {emoji:'🍚',en:'Rice',ar:'أرز'},{emoji:'🥕',en:'Carrot',ar:'جزرة'},
+        {emoji:'🍯',en:'Honey',ar:'عسل'},{emoji:'🥛',en:'Milk',ar:'حليب'},
+        {emoji:'🍓',en:'Strawberry',ar:'فراولة'},{emoji:'🍳',en:'Egg',ar:'بيضة مقلية'}
+      ]},
+      family:{label:'العائلة', type:'grid', items:[
+        {emoji:'👨',en:'Father',ar:'أب'},{emoji:'👩',en:'Mother',ar:'أم'},
+        {emoji:'👦',en:'Brother',ar:'أخ'},{emoji:'👧',en:'Sister',ar:'أخت'},
+        {emoji:'👴',en:'Grandfather',ar:'جد'},{emoji:'👵',en:'Grandmother',ar:'جدة'},
+        {emoji:'👶',en:'Baby',ar:'رضيع'},{emoji:'👪',en:'Family',ar:'عائلة'}
+      ]},
+      body:{label:'جسمي', type:'grid', items:[
+        {emoji:'👀',en:'Eyes',ar:'عينان'},{emoji:'👂',en:'Ear',ar:'أذن'},
+        {emoji:'👄',en:'Mouth',ar:'فم'},{emoji:'✋',en:'Hand',ar:'يد'},
+        {emoji:'🦶',en:'Foot',ar:'قدم'},{emoji:'💇',en:'Hair',ar:'شعر'},
+        {emoji:'🦷',en:'Teeth',ar:'أسنان'},{emoji:'❤️',en:'Heart',ar:'قلب'}
+      ]}
+    }
+  },
+  3: {
+    title:'جمل صغيرة', color:'l3',
+    cats:{
+      greetings:{label:'تحيات', type:'sentence', items:[
+        {en:'Hello! How are you?', ar:'مرحباً! كيف حالك؟'},
+        {en:'I am fine, thank you.', ar:'أنا بخير، شكراً لك.'},
+        {en:'Good morning!', ar:'صباح الخير!'},
+        {en:'Good night!', ar:'تصبح على خير!'},
+        {en:'What is your name?', ar:'ما اسمك؟'},
+        {en:'My name is Ahmed.', ar:'اسمي أحمد.'},
+        {en:'Nice to meet you.', ar:'سعيد بلقائك.'},
+        {en:'See you tomorrow!', ar:'أراك غداً!'}
+      ]},
+      daily:{label:'جمل يومية', type:'sentence', items:[
+        {en:'I like apples.', ar:'أنا أحب التفاح.'},
+        {en:'This is my house.', ar:'هذا منزلي.'},
+        {en:'The cat is small.', ar:'القطة صغيرة.'},
+        {en:'I have two brothers.', ar:'لدي أخوان.'},
+        {en:'The sun is yellow.', ar:'الشمس صفراء.'},
+        {en:'Can I have some water?', ar:'هل يمكنني الحصول على بعض الماء؟'},
+        {en:'I love my family.', ar:'أنا أحب عائلتي.'},
+        {en:'Today is a beautiful day.', ar:'اليوم يوم جميل.'},
+        {en:'Where is my book?', ar:'أين كتابي؟'},
+        {en:'Let us play together.', ar:'دعنا نلعب معاً.'}
+      ]}
+    }
+  }
+};
+
+let currentLevel = null;
+let currentCat = null;
+
+function speak(text){
+  try{
+    const u = new SpeechSynthesisUtterance(text.replace(/\s*\([A-Z]\)/,''));
+    u.lang = 'en-US'; u.rate = 0.85;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+function openLevel(n){
+  currentLevel = n;
+  const level = DATA[n];
+  document.getElementById('level-title').textContent = level.title;
+  const catRow = document.getElementById('cat-row');
+  catRow.innerHTML = '';
+  const keys = Object.keys(level.cats);
+  keys.forEach((k, i) => {
+    const pill = document.createElement('div');
+    pill.className = 'cat-pill' + (i===0?' active':'');
+    pill.textContent = level.cats[k].label;
+    pill.onclick = () => selectCat(k, pill);
+    catRow.appendChild(pill);
+  });
+  selectCat(keys[0]);
+  showScreen('screen-level');
+}
+
+function selectCat(key, pillEl){
+  currentCat = key;
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+  if(pillEl) pillEl.classList.add('active');
+  else { const idx = Object.keys(DATA[currentLevel].cats).indexOf(key); document.querySelectorAll('.cat-pill')[idx]?.classList.add('active'); }
+  renderContent();
+}
+
+function renderContent(){
+  const cat = DATA[currentLevel].cats[currentCat];
+  const area = document.getElementById('content-area');
+  area.innerHTML = '';
+
+  if(cat.type === 'sentence'){
+    const hint = document.getElementById('level-hint');
+    hint.textContent = 'اضغط 🔊 للاستماع إلى الجملة';
+    cat.items.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'sentence-card';
+      card.innerHTML = `
+        <button class="speak-btn" onclick="speak('${item.en.replace(/'/g,"\\'")}')">🔊</button>
+        <div class="sentence-en en">${item.en}</div>
+        <div class="sentence-ar">${item.ar}</div>`;
+      area.appendChild(card);
+    });
+    return;
+  }
+
+  document.getElementById('level-hint').textContent = 'اضغط على البطاقة لترى الترجمة، واضغط 🔊 للاستماع';
+  const grid = document.createElement('div');
+  grid.className = 'card-grid';
+
+  cat.items.forEach(item => {
+    const wrap = document.createElement('div');
+    wrap.className = 'flip-card';
+    wrap.onclick = () => wrap.classList.toggle('flipped');
+
+    const frontVisual = cat.type === 'colors'
+      ? `<div class="swatch" style="background:${item.hex}"></div>`
+      : `<div class="card-emoji">${item.emoji}</div>`;
+
+    wrap.innerHTML = `
+      <div class="flip-inner">
+        <div class="flip-face front">
+          <button class="speak-btn" onclick="event.stopPropagation(); speak('${item.en.replace(/'/g,"\\'")}')">🔊</button>
+          ${frontVisual}
+          <div class="card-word en">${item.en}</div>
+        </div>
+        <div class="flip-face back">
+          <div class="card-ar">${item.ar}</div>
+        </div>
+      </div>`;
+    grid.appendChild(wrap);
+  });
+  area.appendChild(grid);
+}
+
+function goHome(){ showScreen('screen-home'); }
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
