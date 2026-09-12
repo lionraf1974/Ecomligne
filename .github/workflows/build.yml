@@ -9,30 +9,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      - name: Install Bubblewrap CLI
-        run: npm install -g @bubblewrap/cli
-
-      - name: Download Android Command Line Tools
+      - name: Prepare Capacitor App
         run: |
-          mkdir -p android-sdk/cmdline-tools
-          cd android-sdk/cmdline-tools
-          curl -s https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -o tools.zip
-          unzip -q tools.zip
-          mv cmdline-tools latest
+          npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/android
+          npx cap init Ecomligne com.ecomligne.app --web-dir app-package
+          npx cap add android
+          npx cap sync
 
-      - name: Generate Android Project & APK
+      - name: Build APK with Gradle
         run: |
-          yes | bubblewrap init --manifest=https://raw.githubusercontent.com/lionraf1974/Ecomligne/main/app-package/manifest.json
-          bubblewrap build
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
 
       - name: Upload APK Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: ./*.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
