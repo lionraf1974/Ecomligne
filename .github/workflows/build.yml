@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Java JDK
         uses: actions/setup-java@v3
@@ -22,25 +22,13 @@ jobs:
           channel: 'stable'
 
       - name: Install Dependencies
-        run: |
-          if [ -f "pubspec.yaml" ]; then
-            flutter pub get
-          else
-            cd $(find . -maxdepth 2 -name "pubspec.yaml" -exec dirname {} \;)
-            flutter pub get
-          fi
+        run: flutter pub get
 
       - name: Build APK
-        run: |
-          if [ -f "pubspec.yaml" ]; then
-            flutter build apk --release
-          else
-            cd $(find . -maxdepth 2 -name "pubspec.yaml" -exec dirname {} \;)
-            flutter build apk --release
-          fi
+        run: flutter build apk --release --no-tree-shake-icons
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ecomligne-app-release
-          path: '**/build/app/outputs/flutter-apk/app-release.apk'
+          path: build/app/outputs/flutter-apk/app-release.apk
