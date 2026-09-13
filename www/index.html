@@ -5,18 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ecomligne Store</title>
     <style>
-        body { font-family: sans-serif; text-align: center; background-color: #f5f5f9; padding: 40px 20px; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        h1 { color: #673ab7; margin-bottom: 10px; }
-        p { color: #555; font-size: 18px; }
-        .icon { font-size: 64px; margin-bottom: 20px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        body { background-color: #f4f6f9; padding-bottom: 20px; }
+        header { background: #6200ee; color: white; padding: 16px; text-align: center; font-size: 20px; font-weight: bold; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+        .container { padding: 15px; }
+        .product-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; flex-direction: column; align-items: center; }
+        .product-img { width: 100px; height: 100px; background: #e0e0e0; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 10px; }
+        .product-title { font-size: 18px; font-weight: bold; margin-bottom: 5px; color: #333; }
+        .product-price { font-size: 16px; color: #0984e3; font-weight: bold; margin-bottom: 10px; }
+        .btn-buy { background: #00b894; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 15px; cursor: pointer; width: 100%; font-weight: bold; }
+        .btn-buy:active { background: #00876c; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="icon">🛒</div>
-        <h1>متجر Ecomligne</h1>
-        <p>مرحباً بك في تطبيق Ecomligne للتجارة الإلكترونية</p>
+    <header>🛒 متجر Ecomligne</header>
+    <div class="container">
+        <div class="product-card">
+            <div class="product-img">📱</div>
+            <div class="product-title">هاتف ذكي الحديث</div>
+            <div class="product-price">45,000 د.ج</div>
+            <button class="btn-buy" onclick="alert('تم إضافة المنتج لسلة الشراء!')">أضف للسلة</button>
+        </div>
+        <div class="product-card">
+            <div class="product-img">🎧</div>
+            <div class="product-title">سماعات لاسلكية</div>
+            <div class="product-price">8,500 د.ج</div>
+            <button class="btn-buy" onclick="alert('تم إضافة المنتج لسلة الشراء!')">أضف للسلة</button>
+        </div>
     </div>
 </body>
 </html>
