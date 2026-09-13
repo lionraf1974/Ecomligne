@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر Ecomligne</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        body { background-color: #f4f6f9; color: #333; padding-bottom: 70px; }
+        
+        /* Header */
+        header { background: #4f46e5; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; sticky: top; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .logo { font-size: 1.4rem; font-weight: bold; }
+        .cart-icon { position: relative; cursor: pointer; font-size: 1.5rem; }
+        .cart-badge { position: absolute; top: -8px; right: -10px; background: #ef4444; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; }
+
+        /* Categories */
+        .categories { display: flex; gap: 10px; overflow-x: auto; padding: 15px 20px; background: white; margin-bottom: 15px; }
+        .category-btn { padding: 8px 16px; border: 1px solid #e5e7eb; border-radius: 20px; background: white; cursor: pointer; white-space: nowrap; font-size: 0.9rem; }
+        .category-btn.active { background: #4f46e5; color: white; border-color: #4f46e5; }
+
+        /* Product Grid */
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 0 20px; }
+        .product-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
+        .product-img { width: 100%; height: 140px; object-fit: cover; background: #f3f4f6; }
+        .product-info { padding: 12px; }
+        .product-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; }
+        .product-price { color: #4f46e5; font-weight: bold; font-size: 1.1rem; margin-bottom: 10px; }
+        .add-to-cart-btn { width: 100%; padding: 8px; background: #4f46e5; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+        .add-to-cart-btn:active { background: #3730a3; }
+
+        /* Cart Modal */
+        .cart-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: flex-end; }
+        .cart-modal.open { display: flex; }
+        .cart-content { background: white; width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; padding: 20px; max-height: 80vh; overflow-y: auto; }
+        .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f3f4f6; }
+        .cart-total { display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem; margin-top: 15px; padding-top: 15px; border-top: 2px solid #f3f4f6; }
+        .checkout-btn { width: 100%; padding: 12px; background: #10b981; color: white; border: none; border-radius: 8px; margin-top: 15px; font-size: 1rem; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Ecomligne 🛍️</div>
+        <div class="cart-icon" onclick="toggleCart()">
+            🛒 <span class="cart-badge" id="cartBadge">0</span>
+        </div>
+    </header>
+
+    <div class="categories">
+        <button class="category-btn active">الكل</button>
+        <button class="category-btn">إلكترونيات</button>
+        <button class="category-btn">أزياء</button>
+        <button class="category-btn">منزلية</button>
+    </div>
+
+    <main class="products-grid" id="productsGrid"></main>
+
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h3>سلة الشراء 🛒</h3>
+                <button onclick="toggleCart()" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">✕</button>
+            </div>
+            <div id="cartItems"></div>
+            <div class="cart-total">
+                <span>الإجمالي:</span>
+                <span id="cartTotal">0 د.ج</span>
+            </div>
+            <button class="checkout-btn" onclick="checkout()">إتمام الطلب الآن</button>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            { id: 1, title: 'ساعة ذكية Smart Watch', price: 4500, img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300' },
+            { id: 2, title: 'سماعات لاسلكية Bluetooth', price: 3200, img: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300' },
+            { id: 3, title: 'حقيبة ظهر عصرية', price: 2800, img: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300' },
+            { id: 4, title: 'نظارة شمسية كلاسيكية', price: 1900, img: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=300' }
+        ];
+
+        let cart = [];
+
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = products.map(p => `
+                <div class="product-card">
+                    <img src="${p.img}" class="product-img" alt="${p.title}">
+                    <div class="product-info">
+                        <div class="product-title">${p.title}</div>
+                        <div class="product-price">${p.price} د.ج</div>
+                        <button class="add-to-cart-btn" onclick="addToCart(${p.id})">إضافة للسلة</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            cart.push(product);
+            updateCart();
+        }
+
+        function updateCart() {
+            document.getElementById('cartBadge').innerText = cart.length;
+            const cartItems = document.getElementById('cartItems');
+            cartItems.innerHTML = cart.length === 0 ? '<p style="text-align:center; padding:20px; color:#888;">السلة فارغة</p>' : 
+                cart.map((item, index) => `
+                    <div class="cart-item">
+                        <div>
+                            <strong>${item.title}</strong>
+                            <div style="color:#666; font-size:0.85rem;">${item.price} د.ج</div>
+                        </div>
+                        <button onclick="removeFromCart(${index})" style="background:none; border:none; color:#ef4444; cursor:pointer;">حذف</button>
+                    </div>
+                `).join('');
+            
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            document.getElementById('cartTotal').innerText = total + ' د.ج';
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        function toggleCart() {
+            document.getElementById('cartModal').classList.toggle('open');
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert('سلتك فارغة!');
+                return;
+            }
+            alert('تم تسجيل طلبك بنجاح!');
+            cart = [];
+            updateCart();
+            toggleCart();
+        }
+
+        renderProducts();
+    </script>
+</body>
+</html>
