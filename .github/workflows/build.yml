@@ -1,4 +1,4 @@
-name: Build Flutter APK
+name: Build Ecomligne APK
 
 on:
   push:
@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
       - name: Setup Java JDK
         uses: actions/setup-java@v3
@@ -16,19 +16,25 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          channel: 'stable'
+          node-version: 18
 
-      - name: Install Dependencies
-        run: flutter pub get
+      - name: Install Cordova
+        run: npm install -g cordova
 
-      - name: Build APK
-        run: flutter build apk --release --no-tree-shake-icons
+      - name: Build Cordova App
+        run: |
+          cordova create myApp com.ecomligne.app Ecomligne
+          cd myApp
+          rm -rf www/*
+          cp -r ../www/* www/
+          cordova platform add android
+          cordova build android
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ecomligne-app-release
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: ecomligne-apk
+          path: myApp/platforms/android/app/build/outputs/apk/debug/app-debug.apk
